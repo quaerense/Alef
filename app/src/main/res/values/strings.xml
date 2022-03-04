@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Alef</string>
     <string name="image">Image</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="full_screen_image">Full screen image</string>
+    <string name="image_is_not_found">Image is not found</string>
 </resources>

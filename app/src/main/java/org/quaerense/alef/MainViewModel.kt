@@ -1,23 +1,36 @@
 package org.quaerense.alef
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.quaerense.alef.network.ApiFactory
 
 class MainViewModel : ViewModel() {
-
-    fun loadData(): List<String> {
-        val apiService = ApiFactory.apiService
-        val data = mutableListOf<String>()
-
-        viewModelScope.launch {
-            val jsonArray = apiService.getImages()
-            for (imgUrl in jsonArray) {
-                data.add(imgUrl.asString)
-            }
+    private val _imageUrls = MutableLiveData<List<String>>()
+    val imageUrls: LiveData<List<String>>
+        get() {
+            return _imageUrls
         }
 
-        return data
+    init {
+        loadData()
+    }
+
+    fun loadData() {
+        val apiService = ApiFactory.apiService
+        viewModelScope.launch {
+            val data = mutableListOf<String>()
+            val jsonArray = apiService.getImages()
+            for (url in jsonArray) {
+                data.add(convertToHttps(url.asString))
+            }
+            _imageUrls.value = data
+        }
+    }
+
+    private fun convertToHttps(url: String): String {
+        return url.replaceFirst("http://", "https://")
     }
 }
