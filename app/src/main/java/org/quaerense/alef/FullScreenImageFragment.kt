@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.squareup.picasso.Picasso
 
@@ -38,7 +37,7 @@ class FullScreenImageFragment : Fragment() {
     private fun parseParams() {
         val args = requireArguments()
         if (!args.containsKey(IMAGE_URL)) {
-            Toast.makeText(context, R.string.image_is_not_found, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.error_image_is_not_found, Toast.LENGTH_SHORT).show()
             activity?.onBackPressed()
         }
     }

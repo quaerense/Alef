@@ -5,12 +5,15 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlin.math.max
+import org.quaerense.alef.network.InternetChecker
+import kotlin.math.sqrt
+
 
 class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -40,6 +43,7 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         rvImages.layoutManager = GridLayoutManager(activity, getColumnCount())
 
         srlRefresh.setOnRefreshListener(this)
+        loadData()
 
         adapter.onImageClickListener = object : ImageAdapter.OnImageClickListener {
             override fun invoke(imageUrl: String) {
@@ -54,15 +58,30 @@ class MainFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         srlRefresh.isRefreshing = true
-        viewModel.loadData()
+        loadData()
         srlRefresh.isRefreshing = false
     }
 
+    private fun loadData() {
+        val internetChecker = InternetChecker(requireContext())
+        if (internetChecker.isConnected()) {
+            viewModel.loadData()
+        } else {
+            Toast.makeText(requireContext(), R.string.error_no_internet_connection, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun getColumnCount(): Int {
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val width = (displayMetrics.widthPixels / displayMetrics.density).toInt()
-        return max(width / 185, 2)
+        val metrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(metrics)
+        val yInches = metrics.heightPixels / metrics.ydpi
+        val xInches = metrics.widthPixels / metrics.xdpi
+        val diagonalInches = sqrt((xInches * xInches + yInches * yInches).toDouble())
+        return if (diagonalInches >= 7.0) {
+            3
+        } else {
+            2
+        }
     }
 
     private fun runFullScreenFragment(imageUrl: String) {

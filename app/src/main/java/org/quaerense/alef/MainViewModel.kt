@@ -10,13 +10,7 @@ import org.quaerense.alef.network.ApiFactory
 class MainViewModel : ViewModel() {
     private val _imageUrls = MutableLiveData<List<String>>()
     val imageUrls: LiveData<List<String>>
-        get() {
-            return _imageUrls
-        }
-
-    init {
-        loadData()
-    }
+        get() = _imageUrls
 
     fun loadData() {
         val apiService = ApiFactory.apiService
